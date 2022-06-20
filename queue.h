@@ -3,25 +3,36 @@
 
 #include <semaphore.h>
 #include <pthread.h>
-#include "product_record.h"
-
-#define THREADCOUNT 10000 //number of threads that can be in a queue
+#include <limits.h>
 
 struct queue 
 {
 	int id;     //tells us which location in the array it is
-	int front;  //keeps track of the value in the front
-	int back;   //keeps track of the value in back
-	int size;
-	struct product_record productQueue[THREADCOUNT];
+	int front;  //keeps track of the index on the front of the queue
+	int back;   //keeps track of the end of the end of the queue
+	int size;   //how big the queue is
+	int *values; //holder of the queue info
 };
 
-void enqueue(struct queue* threadHolder, struct product_record record);
+void Enqueue(struct queue* queue, int record);
 
-void dequeue(struct queue* threadHolder);
+void Dequeue(struct queue* threadHolder);
 
-void setQueueSize(struct queue* threadHolder);
+int Front(struct queue* queue, int record);
 
-void getFront(struct queue productHolder, struct product_record* record);
+int End(struct queue* queue);
+
+int Empty(struct queue* queue);
+
+int Full(struct queue* queue);
+
+void Resize(struct queue* queue);
+
+void Resize(struct queue* queue, int size);
+
+void Initialize(struct queue* queue);
+
+void Initialize(struct queue* queue, int size);
+
 
 #endif

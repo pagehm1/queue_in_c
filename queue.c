@@ -1,12 +1,10 @@
 /****************************************
 *Name: Hunter Page, pagehm1@etsu.edu
-*Class: CSCI 4727-001
 *File Name: queue.c
-*Date Last Modified: 11/14/21
+*Date Last Modified: 6/20/2022
 *
 ****************************************/
 
-#include "queue.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,33 +12,54 @@
 #include <sys/wait.h>
 #include <semaphore.h>
 #include <pthread.h>
-#include "modifyFile.h"
+#include <queue.h>
+
+//Initializes the queue to its default values, including the size of the queue
+void Initialize(struct queue* queue)
+{
+	queue->front = 0;
+	queue->back = 0;
+	queue->id = 0;
+	queue->size = 1024;
+	queue->values = malloc(sizeof(int)*1024);
+}
+
+//initializes the queue to its default values and the size of the queue
+void Initialize(struct queue* queue, int size)
+{
+	queue->front = 0;
+	queue->back = 0;
+	queue->id = 0;
+	queue->size = size;
+	queue->values = malloc(sizeof(int)*size);
+}
+
 
 //adds a number to the queue
-void enqueue(struct queue* threadHolder, struct product_record record)
+void Enqueue(struct queue* queue, int record)
 {
-	//check if the queue is full
-	if(threadHolder->back == threadHolder->size)
+	//if we are full, add to the queue
+	if(Full(queue) == 1)
 	{
-		printf("Thread is full. Dequeue.");
+		Resize(queue, 1);
 	}
 	else
 	{
 		//initialize the front of the queue
-		if(threadHolder->front == -1)
+		if(queue->front == -1)
 		{
-			threadHolder->front = 0;
+			queue->front = 0;
 		}
 
-		threadHolder->productQueue[threadHolder->back] = record;
+		queue->values[queue->back] = record;
 
-		threadHolder->back++;
+		queue->back++;
 	}
 }
 
 //Changes the front of the queue so that a number is
 //inaccessible, or removed from the queue
-void dequeue(struct queue* threadHolder)
+void Dequeue(struct queue* threadHolder)
 {
 	if(threadHolder->front == -1 || threadHolder->front > threadHolder->back)
 	{
@@ -50,14 +69,41 @@ void dequeue(struct queue* threadHolder)
 	threadHolder->front++;	
 }
 
-//grabs the 'first' item in the queue
-void getFront(struct queue productHolder, struct product_record* record)
+//grabs the 'first' item entered into the queue
+int Front(struct queue* que, int record)
 {
-	record = &productHolder.productQueue[productHolder.front];
+	return que->values[que->front];
+}
+
+//grabs the last item entered into the queue
+int End(struct queue* que)
+{
+	return que->values[que->back];
+}
+
+//set the amount of records that can be held in the queue based on the size passed in
+void Resize(struct queue* queue, int size)
+{
+	queue->values = (int *) realloc(queue->values, size);
 }
 
 //set the amount of records that can be held in the queue
-void setQueueSize(struct queue* threadHolder)
+void Resize(struct queue* queue)
 {
-	threadHolder->size = sizeof(threadHolder->productQueue) / sizeof(int);
+	queue->size = queue->size*2;
+	queue->values = (int *) realloc(queue->values, queue->size);
 }
+
+//returns whether the queue is full
+//0: not full
+//1: full
+int Full(struct queue* queue)
+{
+	if(queue->back == queue->size)
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
