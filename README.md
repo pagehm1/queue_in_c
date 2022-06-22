@@ -1,6 +1,6 @@
 # queue_in_c
 
-An implementation of a queue in C
+A base implementation of a queue in C. 
 
 
 ## How to Use
