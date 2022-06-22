@@ -1,7 +1,7 @@
 /****************************************
-*Name: Hunter Page, pagehm1@etsu.edu
+*Name: Hunter Page
 *File Name: queue.c
-*Date Last Modified: 6/20/2022
+*Date Last Modified: 6/22/2022
 *
 ****************************************/
 
@@ -12,24 +12,13 @@
 #include <sys/wait.h>
 #include <semaphore.h>
 #include <pthread.h>
-#include <queue.h>
-
-//Initializes the queue to its default values, including the size of the queue
-void Initialize(struct queue* queue)
-{
-	queue->front = 0;
-	queue->back = 0;
-	queue->id = 0;
-	queue->size = 1024;
-	queue->values = malloc(sizeof(int)*1024);
-}
+#include "queue.h"
 
 //initializes the queue to its default values and the size of the queue
 void Initialize(struct queue* queue, int size)
 {
 	queue->front = 0;
 	queue->back = 0;
-	queue->id = 0;
 	queue->size = size;
 	queue->values = malloc(sizeof(int)*size);
 }
@@ -41,32 +30,18 @@ void Enqueue(struct queue* queue, int record)
 	//if we are full, add to the queue
 	if(Full(queue) == 1)
 	{
-		Resize(queue, 1);
+		Resize(queue);
 	}
-	else
-	{
-		//initialize the front of the queue
-		if(queue->front == -1)
-		{
-			queue->front = 0;
-		}
 
-		queue->values[queue->back] = record;
-
-		queue->back++;
-	}
+	queue->values[queue->back] = record;
+	queue->back++;
 }
 
 //Changes the front of the queue so that a number is
 //inaccessible, or removed from the queue
-void Dequeue(struct queue* threadHolder)
+void Dequeue(struct queue* queue)
 {
-	if(threadHolder->front == -1 || threadHolder->front > threadHolder->back)
-	{
-		printf("Thread is empty");
-	}
-	
-	threadHolder->front++;	
+	queue->front++;	
 }
 
 //grabs the 'first' item entered into the queue
@@ -76,22 +51,16 @@ int Front(struct queue* que, int record)
 }
 
 //grabs the last item entered into the queue
-int End(struct queue* que)
+int Back(struct queue* que)
 {
 	return que->values[que->back];
-}
-
-//set the amount of records that can be held in the queue based on the size passed in
-void Resize(struct queue* queue, int size)
-{
-	queue->values = (int *) realloc(queue->values, size);
 }
 
 //set the amount of records that can be held in the queue
 void Resize(struct queue* queue)
 {
 	queue->size = queue->size*2;
-	queue->values = (int *) realloc(queue->values, queue->size);
+	queue->values = (int *) realloc(queue->values, sizeof(int)*queue->size);
 }
 
 //returns whether the queue is full
@@ -106,4 +75,3 @@ int Full(struct queue* queue)
 
 	return 0;
 }
-
