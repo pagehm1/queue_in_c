@@ -29,5 +29,7 @@ void Resize(struct queue* queue);
 
 void Initialize(struct queue* queue, int size);
 
+void Uninitialize(struct queue* queue);
+
 
 #endif

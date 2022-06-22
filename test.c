@@ -46,4 +46,8 @@ void main()
     }
 
     printf("front: %d\nback: %d\nsize: %d\n", que.front, que.back, que.size);
+
+    Uninitialize(&que);
+
+    printf("front: %d\nback: %d\nsize: %d\n", que.front, que.back, que.size);
 }

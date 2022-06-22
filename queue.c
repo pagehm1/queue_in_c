@@ -75,3 +75,12 @@ int Full(struct queue* queue)
 
 	return 0;
 }
+
+//allows the user to reset all values and remove all numbers from the queue.
+void Uninitialize(struct queue* queue)
+{
+	free(queue->values);
+	queue->front = 0;
+	queue->back = 0;
+	queue->size = 0;
+}
